@@ -1,7 +1,7 @@
 /*
  * @Author: veteran
  * @Date: 2020-03-19 22:47:18
- * @LastEditTime: 2020-03-20 00:04:29
+ * @LastEditTime: 2020-03-20 12:31:51
  * @Description: user api
  */
 const uuidv1 = require("uuid/v1");
@@ -20,9 +20,9 @@ const get = async (ctx, next) => {
   };
 };
 const register = async (ctx, next) => {
-  let body = ctx.request.body
+  let body = ctx.request.body;
   let account = body.account;
-  let user =await userModel.findOne({ account });
+  let user = await userModel.findOne({ account });
   if (user) {
     ctx.body = {
       code: 0,
@@ -55,8 +55,42 @@ const register = async (ctx, next) => {
     };
   }
 };
+const login = async (ctx, next) => {
+  let body = ctx.request.body;
+  let { account, password } = body;
+  let user = await userModel.findOne({
+    account
+  });
+  if (!user) {
+    ctx.body = {
+      code: 0,
+      msg: "account or password error!"
+    };
+    return;
+  }
+  let {userId} =  user;
+  let userPassword =await passwordModel.findOne({
+    userId
+  },{hash:1});
+  console.log("userPassword: ", userPassword);
+
+  const isMatch = await passport.validate(password, userPassword.hash);
+  if (isMatch) {
+    ctx.body = {
+      code: 1,
+      msg: "login success",
+      data: user
+    };
+    return;
+  }
+  ctx.body = {
+    code: 0,
+    msg: "account or password error!"
+  };
+};
 
 module.exports = {
   get,
-  register
+  register,
+  login
 };
