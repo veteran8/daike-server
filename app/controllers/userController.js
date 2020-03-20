@@ -1,7 +1,7 @@
 /*
  * @Author: veteran
  * @Date: 2020-03-19 22:47:18
- * @LastEditTime: 2020-03-20 12:31:51
+ * @LastEditTime: 2020-03-20 13:22:03
  * @Description: user api
  */
 const uuidv1 = require("uuid/v1");
@@ -72,7 +72,6 @@ const login = async (ctx, next) => {
   let userPassword =await passwordModel.findOne({
     userId
   },{hash:1});
-  console.log("userPassword: ", userPassword);
 
   const isMatch = await passport.validate(password, userPassword.hash);
   if (isMatch) {
